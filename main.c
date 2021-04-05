@@ -2,8 +2,8 @@
 #include <stdlib.h>
 #include <limits.h>
 #include <string.h>
-#define START_CITY 1
-#define FILE_NAME "/Users/meaning/CLionProjects/Dijkstra/cities.txt"
+#define START_CITY 3
+#define FILE_NAME "/Users/meaning/CLionProjects/dijkstra/Dijkstra_input.txt"
 typedef struct {
     int state;
     int value;
@@ -63,7 +63,7 @@ void getCitiesData(char **citiesName, int **adjacency, int cityCount) {
     fclose(file);
 }
 
-void Dijkstra(Distance *distances, int **adjacency, char **citiesName, int cityCount, int begin) {
+void dijkstra(Distance *distances, int **adjacency, char **citiesName, int cityCount, int begin) {
     int i, minIndex = 0, count = 0, min;
     for (i = 0; i < cityCount; i++) {
         char *str = malloc(sizeof(char) * 60);
@@ -97,9 +97,9 @@ void Dijkstra(Distance *distances, int **adjacency, char **citiesName, int cityC
 }
 
 int main() {
-    int i, cityCount, **adjacency;
+    int i, j, cityCount, **adjacency;
     char **citiesName;
-    Distance *distances;
+    Distance **distances;
     cityCount = getCityCount();
     citiesName = malloc(sizeof(char *) * cityCount);
     adjacency = malloc(sizeof(int *) * cityCount);
@@ -108,7 +108,10 @@ int main() {
     }
     distances = malloc(sizeof(Distance) * cityCount);
     getCitiesData(citiesName, adjacency, cityCount);
-    Dijkstra(distances, adjacency, citiesName, cityCount, START_CITY);
+    for (i = 0; i < cityCount; i++) {
+        distances[i] = malloc(sizeof(Distance) * cityCount);
+        dijkstra(distances[i], adjacency, citiesName, cityCount, i + 1);
+    }
     printf("城市有以下：\n");
     for (i = 0; i < cityCount; i++) {
         printf("%s\t", citiesName[i]);
@@ -126,8 +129,10 @@ int main() {
     }
     printf("\n城市数量%d\n", cityCount);
     printf("出发城市到各城市到最短路径：\n");
-    for (i = 0; i < cityCount; i++) {
-        printf("%s,%d\n", distances[i].path, distances[i].value);
+    for (j = 0; j < cityCount; j++) {
+        for (i = 0; i < cityCount; i++) {
+            printf("最短路线：%s\t距离为：%d\n", distances[j][i].path, distances[j][i].value);
+        }
     }
     free(adjacency);
     free(citiesName);
